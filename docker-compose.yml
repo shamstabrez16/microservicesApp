@@ -1,15 +1,36 @@
 version: '3.9'
-
 services:
   eureka-server:
-    image: eureka-server:latest
+    build:
+      context: ./eurekaServerApplication
+      dockerfile: Dockerfile
     ports:
       - "8761:8761"
 
-  inventory-service:
-    image: inventory-service:latest
+  ticketing-service:
+    build:
+      context: ./ticketingservice
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - eureka-server
 
+  inventory-management-service:
+    build:
+      context: ./inventorymanagementservice
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+
+  my-nginx-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - ticketing-service
+      - inventory-management-service
